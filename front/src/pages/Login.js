@@ -11,6 +11,22 @@ function Login() {
 
         console.log(email + ':' + password)
 
+        fetch("http://127.0.0.1:3001/login",
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: "POST",
+                body: JSON.stringify({email: email, password: password})
+            })
+            .then(function(res){
+                console.log(res)
+            })
+            .catch(function(res){
+                console.log(res)
+            })
+
         event.preventDefault();
     }
 
