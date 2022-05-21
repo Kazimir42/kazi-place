@@ -1,6 +1,9 @@
 import {useEffect, useState} from "react";
+import {Redirect} from "react-router-dom";
 
 function Login() {
+    const [error, setError] = useState('');
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -11,7 +14,7 @@ function Login() {
 
         console.log(email + ':' + password)
 
-        fetch("http://127.0.0.1:3001/login",
+        fetch("http://127.0.0.1:4000/api/auth/login",
             {
                 headers: {
                     'Accept': 'application/json',
@@ -20,8 +23,18 @@ function Login() {
                 method: "POST",
                 body: JSON.stringify({email: email, password: password})
             })
-            .then(function(res){
-                console.log(res)
+            .then(async rawResponse =>{
+                let content = await rawResponse.json()
+                if (content.error)
+                {
+                    setError(content.error)
+                }else {
+                    console.log(content)
+                    //STORE TOKEN IN STORAGE
+                    sessionStorage.setItem('token', JSON.stringify(content));
+                    setError('');
+                    window.location.href = "/";
+                }
             })
             .catch(function(res){
                 console.log(res)
@@ -39,6 +52,7 @@ function Login() {
                     <input type="password" className="border border-gray-600 p-1" placeholder="password" onChange={ (e) => setPassword(e.target.value) } />
                     <button className="bg-gray-600 text-white p-1">Login</button>
                 </form>
+                {error ? error : ''}
             </div>
         </div>
     );

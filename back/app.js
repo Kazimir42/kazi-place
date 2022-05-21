@@ -10,10 +10,10 @@ const userRoutes = require('./routes/user')
 const app = express();
 
 mongoose.connect('mongodb+srv://' + process.env.MONGO_USER + ':'+ process.env.MONGO_PASS +'@cluster0.nlmm4.mongodb.net/myFirstDatabase?retryWrites=true&w=majority',
-  { useNewUrlParser: true,
-    useUnifiedTopology: true })
-  .then(() => console.log('Connexion à MongoDB réussie !'))
-  .catch(() => console.log('Connexion à MongoDB échouée !'));
+    { useNewUrlParser: true,
+        useUnifiedTopology: true })
+    .then(() => console.log('Connexion à MongoDB réussie !'))
+    .catch(() => console.log('Connexion à MongoDB échouée !'));
 
 app.use((req, res, next) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -22,9 +22,8 @@ app.use((req, res, next) => {
     next();
 });
 
-app.use(express.json());
 
-app.use('/images', express.static(path.join(__dirname, 'images')));
+app.use(express.json());
 
 app.use('/api/auth', userRoutes);
 
