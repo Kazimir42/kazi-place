@@ -1,5 +1,5 @@
 import {useEffect, useState} from "react";
-import {Redirect} from "react-router-dom";
+import {Navigate, Redirect} from "react-router-dom";
 
 function Login() {
     const [error, setError] = useState('');
@@ -9,6 +9,7 @@ function Login() {
 
     useEffect(() => {
     }, [])
+
 
     function handleSubmit(event) {
 

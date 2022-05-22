@@ -7,6 +7,7 @@ function Register() {
     useEffect(() => {
     }, [])
 
+
     function handleSubmit(event) {
 
         console.log(email + ':' + password)

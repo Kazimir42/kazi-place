@@ -9,12 +9,17 @@ function Header() {
     }, [])
 
     function isConnected() {
-        setConnected(!!localStorage.getItem('token'))
+        setConnected(!!sessionStorage.getItem('token'))
+    }
+
+    function logout() {
+        sessionStorage.clear();
+        window.location.reload();
     }
 
     function NotConnectedLinks() {
         return (
-            <div>
+            <div className="flex flex-row gap-4 items-center">
                 <Link to="/login">
                     Login
                 </Link>
@@ -27,10 +32,13 @@ function Header() {
 
     function ConnectedLinks() {
         return (
-            <div>
+            <div className="flex flex-row gap-4 items-center">
                 <Link to="/my-profile">
                     My profile
                 </Link>
+                <a onClick={logout}>
+                    Log out
+                </a>
             </div>
         )
     }
