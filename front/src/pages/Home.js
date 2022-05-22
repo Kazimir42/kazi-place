@@ -31,11 +31,10 @@ function Home() {
         setCanvas(canvas);
         setCtx(canvas.getContext("2d"));
 
+        const socket = io('http://127.0.0.1:4000', { transports : ['websocket'] });
 
-        const socket = socketIOClient('http://127.0.0.1:4000');
-        socket.on("FromAPI", data => {
-            console.log(data);
-        });
+        console.log(socket);
+
 
         setLoading(false)
 
@@ -156,6 +155,9 @@ function Home() {
                 Current color :
                     <div className="h-6 w-6 inline-block" style={{backgroundColor: currentColor}} />
                 </div>
+                {
+
+                }
             </div>
         </div>
     );
