@@ -1,5 +1,4 @@
 import {useEffect, useState} from "react";
-import {Navigate, Redirect} from "react-router-dom";
 
 function Login() {
     const [error, setError] = useState('');
@@ -12,8 +11,6 @@ function Login() {
 
 
     function handleSubmit(event) {
-
-        console.log(email + ':' + password)
 
         fetch("http://127.0.0.1:4000/api/auth/login",
             {
@@ -30,7 +27,6 @@ function Login() {
                 {
                     setError(content.error)
                 }else {
-                    console.log(content)
                     //STORE TOKEN IN STORAGE
                     sessionStorage.setItem('token', JSON.stringify(content));
                     setError('');

@@ -1,6 +1,8 @@
 import {useEffect, useState} from "react";
 
 function Register() {
+    const [error, setError] = useState('');
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
@@ -10,7 +12,29 @@ function Register() {
 
     function handleSubmit(event) {
 
-        console.log(email + ':' + password)
+        fetch("http://127.0.0.1:4000/api/auth/signup",
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: "POST",
+                body: JSON.stringify({email: email, password: password})
+            })
+            .then(async rawResponse =>{
+                let content = await rawResponse.json()
+                if (content.error)
+                {
+                    setError(content.error)
+                }else {
+                    //STORE TOKEN IN STORAGE
+                    setError('');
+                    window.location.href = "/";
+                }
+            })
+            .catch(function(res){
+                console.log(res)
+            })
 
         event.preventDefault();
     }
@@ -23,6 +47,7 @@ function Register() {
                     <input type="password" className="border border-gray-600 p-1" placeholder="password" onChange={ (e) => setPassword(e.target.value) } />
                     <button className="bg-gray-600 text-white p-1">Register</button>
                 </form>
+                {error ? error : ''}
             </div>
         </div>
     );

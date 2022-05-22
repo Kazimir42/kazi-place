@@ -36,7 +36,7 @@ function Header() {
                 <Link to="/my-profile">
                     My profile
                 </Link>
-                <a onClick={logout}>
+                <a onClick={logout} className="cursor-pointer">
                     Log out
                 </a>
             </div>
