@@ -9,7 +9,7 @@ function Home() {
     const [ctx, setCtx] = useState()
     const [loading, setLoading] = useState(true);
     const [pixels, setPixels] = useState([]);
-    const [colors, setColors] = useState(['#000', '#ff0000', '#00ffff'])
+    const [colors, setColors] = useState(['#000000', '#FFFFFF', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#00FFFF', '#FF00FF'])
     const [currentColor, setCurrentColor] = useState('#000');
 
     //BOARD INFO
@@ -19,8 +19,6 @@ function Home() {
     let kPieceHeight= 10;
     let kPixelWidth = 1 + (kBoardWidth * kPieceWidth);
     let kPixelHeight= 1 + (kBoardHeight * kPieceHeight);
-
-
 
     useEffect(() => {
         if (!loading) {
@@ -37,7 +35,7 @@ function Home() {
         const socket = io('http://127.0.0.1:4000', { transports : ['websocket'] });
 
         socket.on('newPixel', function(msg){
-            //draw les nouveaux pixel en temps reel
+            //draw new pixels in real time
             let position = {x: msg.x, y: msg.y}
             drawInFront(position, msg.color, msg.userId)
         });
@@ -158,16 +156,16 @@ function Home() {
                 <div className="flex flex-row gap-1 mt-2">
                     Colors : {colors.map((color, index)=> {
                         return (
-                            <div className="h-6 w-6 cursor-pointer inline-block" key={index} onClick={() => setCurrentColor(color)} style={{backgroundColor: color}} />
+                            <div className="h-6 w-6 cursor-pointer border border-gray-400 inline-block" key={index} onClick={() => setCurrentColor(color)} style={{backgroundColor: color}} />
                         )
                     })}
                 </div>
                 <div className="flex flex-row gap-1 mt-2">
                 Current color :
-                    <div className="h-6 w-6 inline-block" style={{backgroundColor: currentColor}} />
+                    <div className="h-6 w-6 border border-gray-400 inline-block" style={{backgroundColor: currentColor}} />
                 </div>
                 {
-                    error ? <p className="text-red-500 text-lg mt-4 font-semibold">{error}</p> : ''
+                    error ? <p className="text-red-500 text-lg mt-4  font-semibold">{error}</p> : ''
                 }
             </div>
         </div>
