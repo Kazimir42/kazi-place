@@ -2,6 +2,7 @@ import {useEffect, useState} from "react";
 import socketIOClient, {io} from "socket.io-client";
 
 function Home() {
+    const [user, setUser] = useState('');
     const [error, setError] = useState('');
 
     const [canvas, setCanvas] = useState()
@@ -11,14 +12,14 @@ function Home() {
     const [colors, setColors] = useState(['#000', '#ff0000', '#00ffff'])
     const [currentColor, setCurrentColor] = useState('#000');
 
+    //BOARD INFO
     let kBoardWidth = 80;
     let kBoardHeight= 40;
     let kPieceWidth = 10;
     let kPieceHeight= 10;
     let kPixelWidth = 1 + (kBoardWidth * kPieceWidth);
     let kPixelHeight= 1 + (kBoardHeight * kPieceHeight);
-    //let canvas = document.getElementById('canvas');
-    //let ctx = canvas.getContext("2d");
+
 
 
     useEffect(() => {
@@ -26,20 +27,19 @@ function Home() {
             drawBoard();
             drawPixels();
         }
-        getCurrentPixels()
+        getCurrentPixels();
+        let token = sessionStorage.getItem('token');
+        setUser(JSON.parse(token).userId);
         let canvas = document.getElementById('canvas')
         setCanvas(canvas);
         setCtx(canvas.getContext("2d"));
 
         const socket = io('http://127.0.0.1:4000', { transports : ['websocket'] });
 
-        // écoute du socket news
         socket.on('newPixel', function(msg){
-            console.log(msg)
             //draw les nouveaux pixel en temps reel
             let position = {x: msg.x, y: msg.y}
             drawInFront(position, msg.color, msg.userId)
-
         });
 
         setLoading(false)
@@ -77,21 +77,25 @@ function Home() {
     }
 
     function getCurrentPixels() {
-        fetch('http://127.0.0.1:4000/api/pixels')
+        fetch('http://127.0.0.1:4000/api/pixels', {
+            headers: {
+                'authorization': sessionStorage.getItem('token')
+            },
+        })
             .then(response => response.text())
             .then(data => setPixels(JSON.parse(data)));
-
     }
 
     function drawInDatabase(position, color, user) {
-        //post data
         fetch("http://127.0.0.1:4000/api/pixels",
             {
                 headers: {
                     'Accept': 'application/json',
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'authorization': sessionStorage.getItem('token')
                 },
                 method: "POST",
+
                 body: JSON.stringify({
                     x: position.x,
                     y: position.y,
@@ -102,26 +106,22 @@ function Home() {
             })
             .then(async rawResponse =>{
                 let content = await rawResponse.json()
-                if (content.error)
-                {
-                    setError(content.error)
-                }else {
-                    setError('');
-                }
+                if (content.error != null)
+                    setError(content.error || 'Unauthorized')
+                else
+                    drawInFront(position, color)
+
             })
             .catch(function(res){
                 console.log(res)
             })
-
-        drawInFront(position, color, user)
     }
 
-    function drawInFront(position, color, user) {
+    function drawInFront(position, color) {
         //draw in front
-        ctx.fillStyle = color
-        ctx.fillRect( position.x , position.y, kPieceWidth, kPieceHeight);
+        ctx.fillStyle = color;
+        ctx.fillRect(position.x , position.y, kPieceWidth, kPieceHeight);
     }
-
 
 
     function getCursorPos(event) {
@@ -145,12 +145,12 @@ function Home() {
 
     function maybeDraw(event) {
         let position = getCursorPos(event);
-        drawInDatabase(position, currentColor, 1)
-
+        drawInDatabase(position, currentColor, user)
     }
 
     return (
         <div>
+
             <h1 className="text-4xl font-bold">kazi/place</h1>
             <div className="mt-4">
                 <canvas id="canvas" onClick={maybeDraw} width="800" height="400"  className="border border-black">
@@ -167,7 +167,7 @@ function Home() {
                     <div className="h-6 w-6 inline-block" style={{backgroundColor: currentColor}} />
                 </div>
                 {
-
+                    error ? <p className="text-red-500 text-lg mt-4 font-semibold">{error}</p> : ''
                 }
             </div>
         </div>

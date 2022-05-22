@@ -6,7 +6,7 @@ const pixelSchema = mongoose.Schema({
     x: { type: Number, required: true },
     y: { type: Number, required: true },
     color: { type: String, required: true },
-    userId: { type: Number, required: true },
+    userId: { type: String, required: true },
     created_at: { type: Date, required: true }
 });
 

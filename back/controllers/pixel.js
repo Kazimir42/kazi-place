@@ -4,7 +4,6 @@ const Pixel = require('../models/Pixel');
 const socketIo = require("socket.io");
 
 exports.store = (req, res, next) => {
-    console.log('new pixel : ' + req.body)
     delete req.body._id //remove id from request cuz mongodb will generate an id
     const pixel = new Pixel({
         x: req.body.x,
@@ -28,8 +27,4 @@ exports.all = (req, res, next) => {
     Pixel.find()
         .then(pixels => res.status(200).json(pixels))
         .catch(error => res.status(400).json({ error }))
-}
-
-exports.new = (req, res, next) => {
-    res.send({response: "I am alive"}).status(200);
 }
