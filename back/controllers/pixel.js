@@ -1,6 +1,7 @@
 require('dotenv').config();
 
 const Pixel = require('../models/Pixel');
+const socketIo = require("socket.io");
 
 exports.store = (req, res, next) => {
     console.log('new pixel : ' + req.body)
@@ -15,6 +16,12 @@ exports.store = (req, res, next) => {
     pixel.save() //save in mongodb
         .then(() => res.status(201).json( {message: 'ok' }))
         .catch(error => res.status(400).json({ error }))
+
+    let io = req.app.get('socketio');
+
+    io.emit("newPixel", pixel);
+
+
 };
 
 exports.all = (req, res, next) => {
@@ -24,5 +31,5 @@ exports.all = (req, res, next) => {
 }
 
 exports.new = (req, res, next) => {
-    res.send({ response: "I am alive" }).status(200);
+    res.send({response: "I am alive"}).status(200);
 }

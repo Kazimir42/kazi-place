@@ -33,8 +33,14 @@ function Home() {
 
         const socket = io('http://127.0.0.1:4000', { transports : ['websocket'] });
 
-        console.log(socket);
+        // écoute du socket news
+        socket.on('newPixel', function(msg){
+            console.log(msg)
+            //draw les nouveaux pixel en temps reel
+            let position = {x: msg.x, y: msg.y}
+            drawInFront(position, msg.color, msg.userId)
 
+        });
 
         setLoading(false)
 
@@ -77,7 +83,7 @@ function Home() {
 
     }
 
-    function draw(position) {
+    function drawInDatabase(position, color, user) {
         //post data
         fetch("http://127.0.0.1:4000/api/pixels",
             {
@@ -89,8 +95,8 @@ function Home() {
                 body: JSON.stringify({
                     x: position.x,
                     y: position.y,
-                    color: currentColor,
-                    userId: 1,
+                    color: color,
+                    userId: user,
                     created_at: Date.now(),
                 })
             })
@@ -107,10 +113,15 @@ function Home() {
                 console.log(res)
             })
 
+        drawInFront(position, color, user)
+    }
+
+    function drawInFront(position, color, user) {
         //draw in front
-        ctx.fillStyle = currentColor
+        ctx.fillStyle = color
         ctx.fillRect( position.x , position.y, kPieceWidth, kPieceHeight);
     }
+
 
 
     function getCursorPos(event) {
@@ -134,13 +145,13 @@ function Home() {
 
     function maybeDraw(event) {
         let position = getCursorPos(event);
-        draw(position)
+        drawInDatabase(position, currentColor, 1)
 
     }
 
     return (
         <div>
-            <h1 className="text-4xl font-bold">Game</h1>
+            <h1 className="text-4xl font-bold">kazi/place</h1>
             <div className="mt-4">
                 <canvas id="canvas" onClick={maybeDraw} width="800" height="400"  className="border border-black">
                 </canvas>
