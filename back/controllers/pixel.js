@@ -21,5 +21,8 @@ exports.all = (req, res, next) => {
     Pixel.find()
         .then(pixels => res.status(200).json(pixels))
         .catch(error => res.status(400).json({ error }))
+}
 
+exports.new = (req, res, next) => {
+    res.send({ response: "I am alive" }).status(200);
 }

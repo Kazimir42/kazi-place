@@ -1,4 +1,5 @@
 import {useEffect, useState} from "react";
+import socketIOClient, {io} from "socket.io-client";
 
 function Home() {
     const [error, setError] = useState('');
@@ -29,6 +30,12 @@ function Home() {
         let canvas = document.getElementById('canvas')
         setCanvas(canvas);
         setCtx(canvas.getContext("2d"));
+
+
+        const socket = socketIOClient('http://127.0.0.1:4000');
+        socket.on("FromAPI", data => {
+            console.log(data);
+        });
 
         setLoading(false)
 

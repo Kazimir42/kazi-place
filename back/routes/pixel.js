@@ -8,4 +8,6 @@ const PixelController = require('../controllers/pixel');
 router.post('/' , PixelController.store);
 router.get('/' , PixelController.all);
 
+router.get('/new' , PixelController.new);
+
 module.exports = router;
