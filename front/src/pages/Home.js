@@ -1,9 +1,14 @@
 import {useEffect, useState} from "react";
 
 function Home() {
+    const [error, setError] = useState('');
+
     const [canvas, setCanvas] = useState()
     const [ctx, setCtx] = useState()
-    const [loading, setLoading] = useState(false);
+    const [loading, setLoading] = useState(true);
+    const [pixels, setPixels] = useState([]);
+    const [colors, setColors] = useState(['#000', '#ff0000', '#00ffff'])
+    const [currentColor, setCurrentColor] = useState('#000');
 
     let kBoardWidth = 80;
     let kBoardHeight= 40;
@@ -16,15 +21,18 @@ function Home() {
 
 
     useEffect(() => {
-        if (loading) {
+        if (!loading) {
             drawBoard();
+            drawPixels();
         }
+        getCurrentPixels()
         let canvas = document.getElementById('canvas')
         setCanvas(canvas);
         setCtx(canvas.getContext("2d"));
-        setLoading(true)
 
-    }, [loading])
+        setLoading(false)
+
+    }, [loading, pixels.length > 0])
 
     function drawBoard() {
 
@@ -43,10 +51,58 @@ function Home() {
         /* draw it! */
         ctx.strokeStyle = "#ccc";
         ctx.stroke();
+    }
+
+    function drawPixels() {
+        pixels.forEach(
+            pixel =>
+            {
+                ctx.fillStyle = pixel.color
+                ctx.fillRect( pixel.x , pixel.y, kPieceWidth, kPieceHeight)
+            }
+        );
+
+    }
+
+    function getCurrentPixels() {
+        fetch('http://127.0.0.1:4000/api/pixels')
+            .then(response => response.text())
+            .then(data => setPixels(JSON.parse(data)));
 
     }
 
     function draw(position) {
+        //post data
+        fetch("http://127.0.0.1:4000/api/pixels",
+            {
+                headers: {
+                    'Accept': 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                method: "POST",
+                body: JSON.stringify({
+                    x: position.x,
+                    y: position.y,
+                    color: currentColor,
+                    userId: 1,
+                    created_at: Date.now(),
+                })
+            })
+            .then(async rawResponse =>{
+                let content = await rawResponse.json()
+                if (content.error)
+                {
+                    setError(content.error)
+                }else {
+                    setError('');
+                }
+            })
+            .catch(function(res){
+                console.log(res)
+            })
+
+        //draw in front
+        ctx.fillStyle = currentColor
         ctx.fillRect( position.x , position.y, kPieceWidth, kPieceHeight);
     }
 
@@ -82,6 +138,17 @@ function Home() {
             <div className="mt-4">
                 <canvas id="canvas" onClick={maybeDraw} width="800" height="400"  className="border border-black">
                 </canvas>
+                <div className="flex flex-row gap-1 mt-2">
+                    Colors : {colors.map((color, index)=> {
+                        return (
+                            <div className="h-6 w-6 cursor-pointer inline-block" key={index} onClick={() => setCurrentColor(color)} style={{backgroundColor: color}} />
+                        )
+                    })}
+                </div>
+                <div className="flex flex-row gap-1 mt-2">
+                Current color :
+                    <div className="h-6 w-6 inline-block" style={{backgroundColor: currentColor}} />
+                </div>
             </div>
         </div>
     );
